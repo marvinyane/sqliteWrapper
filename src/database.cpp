@@ -20,11 +20,16 @@ database::database(const std::string &path, const void *pKey, int nKey)
         // error!
     }
     else {
-        m_dbHandle = handle;
-
         if (pKey && (nKey > 0)) {
-            sqlite3_key(m_dbHandle, pKey, nKey);
+            err = sqlite3_key(handle, pKey, nKey);
+            std::cout << "sqlite key error " << err << "\n";
+            if (err != SQLITE_OK) {
+                sqlite3_close(handle);
+                return ;
+            }
         }
+
+        m_dbHandle = handle;
     }
 }
 

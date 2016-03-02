@@ -45,7 +45,7 @@ void printResult(DBDataTable *t)
 
 int main()
 {
-    database db("test.db", "test123", 7);
+    database db("test.db");
     if (!db.isOpen()) {
         std::cout << "create or open database failed.\n";
         return 0;
@@ -58,7 +58,7 @@ int main()
             "ADDRESS   CHAR(50),"\
             "SALARY    REAL);");
 
-    if (err != 0) {
+    if (err != DB_OK) {
         std::cout << "database create table failed:"<< err << "\n";
 
         // db.close();
@@ -89,6 +89,11 @@ int main()
     DBDataTable *t = db.rawQuery("select * from TEST", v);
     printResult(t);
 
+    // TODO: change to smart pointer.
+    if (t) {
+        delete t;
+    }
+
     DBDataRow row2(1);
     row2.putString(0, "Joy2", 5, "NAME");
 
@@ -108,11 +113,26 @@ int main()
     //t = db.rawQuery("SELECT ID, NAME, AGE  FROM TEST WHERE ADDRESS=? ORDER BY AGE", args);
     printResult(t);
 
+    // TODO: change to smart pointer.
+    if (t) {
+        delete t;
+    }
+
     result = db.remove("TEST", "ADDRESS=?", args);
     std::cout << "remove return value is " << result << "\n";
 
     t = db.rawQuery("select * from TEST", v);
     printResult(t);
 
-    db.close();
+    // TODO: change to smart pointer.
+    if (t) {
+        delete t;
+    }
+
+    err = db.exec("DROP TABLE TEST;");
+    if (err != DB_OK) {
+        std::cout << "drop table failed. " << err << "\n";
+    }
+
+    return 0;
 }
